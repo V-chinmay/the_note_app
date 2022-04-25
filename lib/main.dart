@@ -10,12 +10,17 @@ void main() {
       title: "Application",
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      theme: ThemeData.dark().copyWith(
+      theme: ThemeData.light().copyWith(
           accentColor: Colors.orange,
           appBarTheme: AppBarTheme(
             centerTitle: false,
             titleTextStyle: TextStyle(fontSize: 32),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
           ),
+          textTheme: TextTheme(
+              headline6: TextStyle(color: Colors.blueGrey, fontSize: 24),
+              subtitle1: TextStyle(color: Colors.blueGrey, fontSize: 16)),
           inputDecorationTheme: InputDecorationTheme(
               focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.orange)),
