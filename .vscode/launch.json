@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "Asus zenfone ",
+            "type": "dart",
+            "request": "launch",
+            "deviceId": "J7AAGF01N718F6J"
+        }
+    
+    ]
+}

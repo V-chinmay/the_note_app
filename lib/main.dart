@@ -10,7 +10,7 @@ void main() {
       title: "Application",
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      theme: ThemeData.light().copyWith(
+      theme: ThemeData.dark().copyWith(
           accentColor: Colors.orange,
           appBarTheme: AppBarTheme(
             centerTitle: false,
@@ -18,6 +18,10 @@ void main() {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
+          scaffoldBackgroundColor: Color.fromRGBO(0x10, 0x11, 0x11, 1),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+              foregroundColor: Colors.white,
+              backgroundColor: Color.fromRGBO(0x10, 0x11, 0x11, 1)),
           textTheme: TextTheme(
               headline6: TextStyle(color: Colors.blueGrey, fontSize: 24),
               subtitle1: TextStyle(color: Colors.blueGrey, fontSize: 16)),

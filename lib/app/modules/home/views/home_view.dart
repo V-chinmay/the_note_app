@@ -7,22 +7,46 @@ import '../controllers/home_controller.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class HomeView extends GetView<HomeController> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
+  void onAddNewNote() {}
+
+  AppBar get _appBar => AppBar(
           title: Text(
             'Notes',
-            style: Theme.of(context).appBarTheme.titleTextStyle,
+            style: Get.theme.appBarTheme.titleTextStyle,
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          actions: [
+            Container(
+              margin: EdgeInsets.only(top: 8, right: 16),
+              child: ElevatedButton(
+                onPressed: () => null,
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.grey.shade800)),
+                child: Icon(
+                  Icons.search,
+                ),
+              ),
+            ),
+          ]);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: _appBar,
+        floatingActionButton: FloatingActionButton(
+          onPressed: onAddNewNote,
+          child: Icon(Icons.add),
         ),
         body: MasonryGridView.count(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(20),
             crossAxisCount: 2,
-            crossAxisSpacing: 4,
-            mainAxisSpacing: 4,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
             itemCount: 20,
             itemBuilder: (_, index) => NoteTile(
                 List.generate(index + 1, (index) => "Something,Something,")
