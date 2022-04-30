@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "Open scrcpy on android device",
-            "command": "scrcpy --turn-screen-off -s ${input:deviceid}",
+            "command": "scrcpy --turn-screen-off -s J7AAGF01N718F6J",
             "type": "shell",
             "args": [],
             "problemMatcher": [
@@ -15,11 +15,11 @@
             "group": "build"
         }
     ],
-    "inputs": [
-        {
-            "id": "deviceid",
-            "description": "DeviceID",
-            "type": "promptString",
-        }
-    ]
+    // "inputs": [
+    //     {
+    //         "id": "deviceid",
+    //         "description": "DeviceID",
+    //         "type": "promptString",
+    //     }
+    // ]
 }

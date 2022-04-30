@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:the_note_app/app/common/input_field.dart';
+import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
