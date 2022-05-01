@@ -10,12 +10,14 @@ dependencies:
   get: 4.5.1
   flutter_staggered_grid_view: 0.6.1
   intl: 0.17.0
+  floor_annotation:
+  floor:
   flutter: 
     sdk: flutter
 
 dev_dependencies: 
-  flutter_test: 
-    sdk: flutter
+  floor_generator:
+  build_runner:
 
 flutter: 
   uses-material-design: true

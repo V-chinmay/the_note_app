@@ -4,14 +4,17 @@ import 'package:get/get.dart';
 import 'package:the_note_app/app/modules/home/views/elevated_note_action_button.dart';
 
 import '../controllers/note_edit_controller.dart';
-import '../note_model.dart';
-import 'package:the_note_app/app/common/extensions/datetime.dart';
+
+
 
 class NoteEditView extends GetView<NoteEditController> {
-  NoteEditView();
-  late Note note = Get.arguments;
 
-  void onEditButtonPressed() {
+
+  void onEditButtonPressed() async {
+    if (controller.isEditingMode.value) {
+      await controller.updateNote();
+    }
+    if (controller.isNewNote) return;
     controller.isEditingMode.toggle();
   }
 
@@ -56,7 +59,7 @@ class NoteEditView extends GetView<NoteEditController> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          note.lastModifiedDate!.formattedDateString(),
+                          controller.lastModifiedDate,
                           textAlign: TextAlign.start,
                           style: Theme.of(context)
                               .textTheme

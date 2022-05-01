@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../note_model.dart';
+import '../../../data/models/note_model.dart';
 
 class NoteProvider extends GetConnect {
   @override

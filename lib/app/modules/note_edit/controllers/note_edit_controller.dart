@@ -1,23 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:the_note_app/app/data/app_database.dart';
 
-import '../note_model.dart';
+import '../../../data/models/note_model.dart';
+import 'package:the_note_app/app/common/extensions/datetime.dart';
 
 class NoteEditController extends GetxController {
-  Note? _note;
+  late Note _note;
+
+  bool isNewNote = false;
 
   set note(Note note) {
     _note = note;
     titleEditingController =
-        TextEditingController(text: GetUtils.capitalize(_note!.title!));
+        TextEditingController(text: GetUtils.capitalize(_note.title ?? ""));
     descriptionEditingController = TextEditingController(
-        text: GetUtils.capitalize(_note!.description ?? ""));
+        text: GetUtils.capitalize(_note.description ?? ""));
   }
 
   late TextEditingController descriptionEditingController;
   late TextEditingController titleEditingController;
+  String get lastModifiedDate =>
+      (_note.lastModifiedDate ?? DateTime.now()).formattedDateString();
 
-  var isEditingMode = false.obs;
+  late var isEditingMode = (false | isNewNote).obs;
+
+  Future<void> updateNote() async {
+    _note.lastModifiedDate = DateTime.now();
+    _note.description = descriptionEditingController.text;
+    _note.title = titleEditingController.text;
+    final noteDao = Get.find<AppDatabase>().noteDao;
+    if (_note.id == null) {
+      _note.id = _note.hashCode.toRadixString(16);
+      await noteDao.insertNote(_note);
+    } else {
+      await noteDao.updateNote(_note);
+    }
+  }
 
   @override
   void onInit() {

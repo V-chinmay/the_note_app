@@ -1,22 +1,21 @@
 import 'package:get/get.dart';
-import 'package:the_note_app/app/modules/note_edit/note_model.dart';
+import 'package:the_note_app/app/data/app_database.dart';
+import 'package:the_note_app/app/data/models/note_model.dart';
 
 class HomeController extends GetxController {
   List<Note> notesList = <Note>[];
 
-  void getLatestNotes() {
-    notesList.addAll(List.generate(
-        20,
-        (index) => Note(
-            title: "title $index",
-            description: List.generate(2000, (index) => "description $index").join(" "),
-            lastModifiedDate: DateTime.now()
-                .subtract(Duration(days: index)))));
+  void getLatestNotes() async {
+    notesList = await Get.find<AppDatabase>().noteDao.getAllNotes();
     update();
+    
   }
 
   @override
-  void onInit() {
+  void onInit() async {
+    AppDatabase database = await AppDatabase.shared;
+    Get.put(database);
+    getLatestNotes();
     super.onInit();
   }
 

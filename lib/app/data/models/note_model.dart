@@ -1,6 +1,16 @@
+import 'package:floor/floor.dart';
+
+
+@entity
 class Note {
+  
+  @primaryKey
+  String? id;
+  
   String? title;
   String? description;
+  
+  
   DateTime? lastModifiedDate;
 
   Note({this.title, this.description, this.lastModifiedDate});
@@ -19,3 +29,6 @@ class Note {
     return data;
   }
 }
+
+
+

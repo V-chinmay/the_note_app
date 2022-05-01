@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:the_note_app/app/data/app_database.dart';
 
 import 'app/routes/app_pages.dart';
 import 'app/routes/navigation_middleware.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Get.put(NavigationMiddleWare());
   runApp(
     GetMaterialApp(
