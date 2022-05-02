@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:the_note_app/app/data/app_database.dart';
+import 'package:the_note_app/app/data/database/app_database.dart';
 
 import 'app/routes/app_pages.dart';
 import 'app/routes/navigation_middleware.dart';

@@ -1,21 +1,24 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
-import 'package:the_note_app/app/data/app_database.dart';
+import 'package:the_note_app/app/data/database/app_database.dart';
 import 'package:the_note_app/app/data/models/note_model.dart';
 
 class HomeController extends GetxController {
   List<Note> notesList = <Note>[];
 
-  void getLatestNotes() async {
-    notesList = await Get.find<AppDatabase>().noteDao.getAllNotes();
-    update();
-    
-  }
+  late AppDatabaseProxy _appDatabaseProxy = Get.find();
+
+  StreamSubscription<List<Note>>? _streamSubscription;
 
   @override
   void onInit() async {
-    AppDatabase database = await AppDatabase.shared;
-    Get.put(database);
-    getLatestNotes();
+    Get.put(AppDatabaseProxy());
+
+    _streamSubscription = _appDatabaseProxy.noteStream.listen((value) {
+      notesList = value;
+      update();
+    });
     super.onInit();
   }
 
@@ -25,5 +28,7 @@ class HomeController extends GetxController {
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    _streamSubscription?.cancel();
+  }
 }

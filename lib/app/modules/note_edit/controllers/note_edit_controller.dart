@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:the_note_app/app/data/app_database.dart';
+import 'package:the_note_app/app/data/database/app_database.dart';
 
 import '../../../data/models/note_model.dart';
 import 'package:the_note_app/app/common/extensions/datetime.dart';
@@ -25,16 +25,18 @@ class NoteEditController extends GetxController {
 
   late var isEditingMode = (false | isNewNote).obs;
 
+  late AppDatabaseProxy _appDatabaseProxy = Get.find();
+
   Future<void> updateNote() async {
     _note.lastModifiedDate = DateTime.now();
     _note.description = descriptionEditingController.text;
     _note.title = titleEditingController.text;
-    final noteDao = Get.find<AppDatabase>().noteDao;
+
     if (_note.id == null) {
       _note.id = _note.hashCode.toRadixString(16);
-      await noteDao.insertNote(_note);
+      await _appDatabaseProxy.insertNewNote(_note);
     } else {
-      await noteDao.updateNote(_note);
+      await _appDatabaseProxy.updateNote(_note);
     }
   }
 

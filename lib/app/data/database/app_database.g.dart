@@ -6,21 +6,21 @@ part of 'app_database.dart';
 // FloorGenerator
 // **************************************************************************
 
-class $FloorAppDatabase {
+class $Floor_AppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder databaseBuilder(String name) =>
-      _$AppDatabaseBuilder(name);
+  static _$_AppDatabaseBuilder databaseBuilder(String name) =>
+      _$_AppDatabaseBuilder(name);
 
   /// Creates a database builder for an in memory database.
   /// Information stored in an in memory database disappears when the process is killed.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() =>
-      _$AppDatabaseBuilder(null);
+  static _$_AppDatabaseBuilder inMemoryDatabaseBuilder() =>
+      _$_AppDatabaseBuilder(null);
 }
 
-class _$AppDatabaseBuilder {
-  _$AppDatabaseBuilder(this.name);
+class _$_AppDatabaseBuilder {
+  _$_AppDatabaseBuilder(this.name);
 
   final String? name;
 
@@ -29,23 +29,23 @@ class _$AppDatabaseBuilder {
   Callback? _callback;
 
   /// Adds migrations to the builder.
-  _$AppDatabaseBuilder addMigrations(List<Migration> migrations) {
+  _$_AppDatabaseBuilder addMigrations(List<Migration> migrations) {
     _migrations.addAll(migrations);
     return this;
   }
 
   /// Adds a database [Callback] to the builder.
-  _$AppDatabaseBuilder addCallback(Callback callback) {
+  _$_AppDatabaseBuilder addCallback(Callback callback) {
     _callback = callback;
     return this;
   }
 
   /// Creates the database and initializes it.
-  Future<AppDatabase> build() async {
+  Future<_AppDatabase> build() async {
     final path = name != null
         ? await sqfliteDatabaseFactory.getDatabasePath(name!)
         : ':memory:';
-    final database = _$AppDatabase();
+    final database = _$_AppDatabase();
     database.database = await database.open(
       path,
       _migrations,
@@ -55,8 +55,8 @@ class _$AppDatabaseBuilder {
   }
 }
 
-class _$AppDatabase extends AppDatabase {
-  _$AppDatabase([StreamController<String>? listener]) {
+class _$_AppDatabase extends _AppDatabase {
+  _$_AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
@@ -134,6 +134,7 @@ class _$NoteDao extends NoteDao {
   Future<List<Note>> getAllNotes() async {
     return _queryAdapter.queryList('SELECT * FROM Note',
         mapper: (Map<String, Object?> row) => Note(
+            id: row['id'] as String?,
             title: row['title'] as String?,
             description: row['description'] as String?,
             lastModifiedDate:
@@ -154,6 +155,7 @@ class _$NoteDao extends NoteDao {
   Future<Note?> getNoteWithID(String id) async {
     return _queryAdapter.query('QUERY * FROM Note WHERE id=?1',
         mapper: (Map<String, Object?> row) => Note(
+            id: row['id'] as String?,
             title: row['title'] as String?,
             description: row['description'] as String?,
             lastModifiedDate:
