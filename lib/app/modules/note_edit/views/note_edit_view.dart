@@ -5,17 +5,21 @@ import 'package:the_note_app/app/modules/home/views/elevated_note_action_button.
 
 import '../controllers/note_edit_controller.dart';
 
-
-
 class NoteEditView extends GetView<NoteEditController> {
-
-
   void onEditButtonPressed() async {
     if (controller.isEditingMode.value) {
       await controller.updateNote();
     }
-    if (controller.isNewNote) return;
+    if (controller.isNewNote) {
+      Get.back();
+      return;
+    }
     controller.isEditingMode.toggle();
+  }
+
+  void onDeleteButtonPressed() async {
+    await controller.deleteNote();
+    Get.back();
   }
 
   @override
@@ -32,6 +36,11 @@ class NoteEditView extends GetView<NoteEditController> {
                 icon: Icons.chevron_left,
               ),
               actions: [
+                ElevatedNoteActionButton(
+                    onPressed: onDeleteButtonPressed, icon: Icons.delete),
+                SizedBox(
+                  width: 10,
+                ),
                 ElevatedNoteActionButton(
                     onPressed: onEditButtonPressed,
                     icon: controller.isEditingMode.value

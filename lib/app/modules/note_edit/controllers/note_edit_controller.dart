@@ -27,6 +27,10 @@ class NoteEditController extends GetxController {
 
   late AppDatabaseProxy _appDatabaseProxy = Get.find();
 
+  Future<void> deleteNote() async {
+    await _appDatabaseProxy.deleteNote(_note);
+  }
+
   Future<void> updateNote() async {
     _note.lastModifiedDate = DateTime.now();
     _note.description = descriptionEditingController.text;

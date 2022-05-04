@@ -5,11 +5,19 @@ import 'package:get/state_manager.dart';
 enum UserInfoFieldType { email, password }
 
 class UserInfoField extends StatelessWidget {
-  UserInfoField(this.userInfoFieldType, this.onInputSubmitted, {Key? key})
+  UserInfoField(this.userInfoFieldType,
+      {Key? key,
+      this.textEditingController,
+      this.onInputSubmitted,
+      this.passwordPolicyRegex})
       : super(key: key);
+
   final UserInfoFieldType userInfoFieldType;
-  void Function(String) onInputSubmitted;
+  void Function(String)? onInputSubmitted;
+  RegExp? passwordPolicyRegex;
   RxBool _isPasswordVisible = false.obs;
+
+  TextEditingController? textEditingController;
 
   String? Function(String?) _inputValidator(
       UserInfoFieldType userInfoFieldType) {
@@ -17,13 +25,13 @@ class UserInfoField extends StatelessWidget {
       case UserInfoFieldType.email:
         return (emailInput) => emailInput != null
             ? !GetUtils.isEmail(emailInput)
-                ? "Invalid email entry"
+                ? "Enter an valid email address"
                 : null
             : null;
       case UserInfoFieldType.password:
         return (passwordInput) => passwordInput != null
-            ? !(passwordInput.length > 8)
-                ? "Invalid password entry"
+            ? (!(this.passwordPolicyRegex?.hasMatch(passwordInput) ?? (true)))
+                ? "Password must have uppercase and special characters."
                 : null
             : null;
       default:
@@ -65,6 +73,7 @@ class UserInfoField extends StatelessWidget {
             () => TextFormField(
               validator: _inputValidator(this.userInfoFieldType),
               decoration: _inputDecoration(this.userInfoFieldType),
+              controller: this.textEditingController,
               obscureText:
                   this.userInfoFieldType == UserInfoFieldType.password &&
                       !this._isPasswordVisible.value,
@@ -74,6 +83,7 @@ class UserInfoField extends StatelessWidget {
         : TextFormField(
             validator: _inputValidator(this.userInfoFieldType),
             decoration: _inputDecoration(this.userInfoFieldType),
+            controller: this.textEditingController,
             obscureText: this.userInfoFieldType == UserInfoFieldType.password,
             onChanged: this.onInputSubmitted,
           );

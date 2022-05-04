@@ -1,12 +1,16 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:the_note_app/app/data/database/app_database.dart';
+import 'package:the_note_app/app/handlers/auth/cognito_auth_handler.dart';
 
 import 'app/routes/app_pages.dart';
 import 'app/routes/navigation_middleware.dart';
 
-void main() {
+void main() async
+{
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(NavigationMiddleWare());
   runApp(

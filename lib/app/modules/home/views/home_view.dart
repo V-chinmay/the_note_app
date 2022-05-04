@@ -12,12 +12,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'elevated_note_action_button.dart';
 
 class HomeView extends GetView<HomeController> {
-  
   void onAddNewNote() {
-    Get.toNamed(Routes.NOTE_EDIT,arguments: {"note":Note(),"isNewNote":true});
+    Get.toNamed(Routes.NOTE_EDIT,
+        arguments: {"note": Note(), "isNewNote": true});
   }
 
-  AppBar get _appBar => AppBar(
+  AppBar _appBar(bool isInSearchMode) => AppBar(
           title: Text(
             'Notes',
             style: Get.theme.appBarTheme.titleTextStyle,
@@ -25,42 +25,73 @@ class HomeView extends GetView<HomeController> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
-            ElevatedNoteActionButton(icon: Icons.search, onPressed: () => null),
+            if (controller.isSearchingMode.value)
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: controller.queryEditingController,
+                  onChanged: controller.onQueryChanged,
+                  decoration: InputDecoration(
+                      hintText: "search something...",
+                      suffix: IconButton(
+                          onPressed: () {
+                            controller.queryEditingController.clear();
+                            controller.onQueryChanged(null);
+                          },
+                          icon: Icon(Icons.cancel_sharp))),
+                ),
+              )),
+            if (!controller.isSearchingMode.value)
+              ElevatedNoteActionButton(
+                  icon: Icons.search,
+                  onPressed: () => controller.isSearchingMode.value = true),
           ]);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: _appBar,
+    return Obx(() => Scaffold(
+        appBar: _appBar(controller.isSearchingMode.value),
         floatingActionButton: FloatingActionButton(
           onPressed: onAddNewNote,
           child: Icon(Icons.add),
         ),
-        body: GetBuilder<HomeController>(
-          initState: (_) {
-            
+        body: GestureDetector(
+          onTap: () {
+            controller.toggleSearchingMode();
+            FocusManager.instance.primaryFocus?.unfocus();
           },
-          builder: (_) {
-            return controller.notesList.isEmpty
-                ? Center(
-                    child: Text("There no notes yet!"),
-                  )
-                : MasonryGridView.count(
-                    padding: EdgeInsets.all(20),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    itemCount: controller.notesList.length,
-                    itemBuilder: (_, index) => InkWell(
-                        onTap: () {
-                          Get.toNamed(Routes.NOTE_EDIT,arguments: {"note":controller.notesList[index],"isNewNote":false});
-                        },
-                        child: NoteTile(
-                            controller.notesList[index].title!,
-                            controller.notesList[index].lastModifiedDate ??
-                                DateTime.now(),
-                            ((index % 5 + 1) * 100))));
-          },
-        ));
+          child: GetBuilder<HomeController>(
+            initState: (_) {},
+            builder: (_) {
+              List<Note> noteList = controller.isSearchingMode.value
+                  ? controller.filteredNotesList
+                  : controller.notesList;
+              return controller.notesList.isEmpty
+                  ? Center(
+                      child: Text("There no notes yet!"),
+                    )
+                  : MasonryGridView.count(
+                      padding: EdgeInsets.all(20),
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 15,
+                      mainAxisSpacing: 15,
+                      itemCount: noteList.length,
+                      itemBuilder: (_, index) => InkWell(
+                          onTap: () {
+                            controller.toggleSearchingMode();
+                            Get.toNamed(Routes.NOTE_EDIT, arguments: {
+                              "note": noteList[index],
+                              "isNewNote": false
+                            });
+                          },
+                          child: NoteTile(
+                              noteList[index].title!,
+                              noteList[index].lastModifiedDate ??
+                                  DateTime.now(),
+                              ((index % 5 + 1) * 100))));
+            },
+          ),
+        )));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:the_note_app/app/common/amplifyconfiguration.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
@@ -8,20 +9,23 @@ import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
   GlobalKey<FormState> _credsFormKey = GlobalKey();
-  String? emailID;
-  String? password;
 
   Form get _userAuthDetailsInputForm => Form(
       key: this._credsFormKey,
       child: Column(
         children: [
           UserInfoField(
-              UserInfoFieldType.email, (emailInput) => emailID = emailInput),
+            UserInfoFieldType.email,
+            textEditingController: this.controller.emailEditingController,
+          ),
           SizedBox(
             height: 10,
           ),
-          UserInfoField(UserInfoFieldType.password,
-              (passwordInput) => password = passwordInput)
+          UserInfoField(
+            UserInfoFieldType.password,
+            textEditingController: this.controller.passwordEditingController,
+            passwordPolicyRegex: RegExp(AWS_PASSWORD_POLICY_REGEX),
+          )
         ],
       ));
   Widget get _loginButton => ConstrainedBox(
@@ -44,14 +48,18 @@ class LoginView extends GetView<LoginController> {
   Widget get _signUpButton => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("New to Notes?", style: TextStyle(color: Colors.white)),
+          Text(
+              this.controller.isNewUser.value
+                  ? "Already have an account?"
+                  : "New to Notes?",
+              style: TextStyle(color: Colors.white)),
           SizedBox(
             width: 10,
           ),
           TextButton(
-            onPressed: () => null,
+            onPressed: onRegisterAccountPressed,
             child: Text(
-              "Register",
+              this.controller.isNewUser.value ? "Login" : "Register",
               style: TextStyle(color: Colors.orange),
             ),
           )
@@ -60,16 +68,22 @@ class LoginView extends GetView<LoginController> {
 
   void onLoginPressed() {
     if (this._credsFormKey.currentState?.validate() ?? false) {
-      Get.offAllNamed(Routes.HOME);
+      this.controller.isNewUser.value
+          ? this.controller.signUpWithInputs()
+          : this.controller.signInWithInputs();
     }
+  }
+
+  void onRegisterAccountPressed() {
+    controller.isNewUser.toggle();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() => Scaffold(
         appBar: AppBar(
           title: Text(
-            'Login',
+            this.controller.isNewUser.value ? "Sign-Up" : "Login",
             style: Theme.of(context).appBarTheme.titleTextStyle,
           ),
           backgroundColor: Colors.transparent,
@@ -79,14 +93,16 @@ class LoginView extends GetView<LoginController> {
           padding: const EdgeInsets.all(20.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             _userAuthDetailsInputForm,
-            Align(
-                alignment: Alignment.centerRight, child: _forgotPasswordButton),
+            if (this.controller.isNewUser.value)
+              Align(
+                  alignment: Alignment.centerRight,
+                  child: _forgotPasswordButton),
             SizedBox(
               height: 20,
             ),
             _loginButton,
             _signUpButton
           ]),
-        ));
+        )));
   }
 }

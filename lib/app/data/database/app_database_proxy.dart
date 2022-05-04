@@ -3,17 +3,19 @@ part of 'app_database.dart';
 enum DatabaseOperation { insert, update, delete, clear }
 
 class AppDatabaseProxy {
+  AppDatabaseProxy(){
+    _updateNoteStreamWithLatestNotes();
+  }
   _AppDatabase? __appDatabase;
 
   Future<_AppDatabase> get _appDatabase async {
     if (__appDatabase == null) {
       __appDatabase = await _AppDatabase.shared;
-      _updateNoteStreamWithLatestNotes();
     }
     return __appDatabase!;
   }
 
-  PublishSubject<List<Note>> noteStream = PublishSubject();
+  BehaviorSubject<List<Note>> noteStream = BehaviorSubject();
 
   Future<void> insertNewNote(Note note) async {
     await _performDBOperation(note, DatabaseOperation.insert);
@@ -28,7 +30,7 @@ class AppDatabaseProxy {
   }
 
   Future<void> clearAllNotes(Note note) async {
-    await _performDBOperation(note, DatabaseOperation.delete);
+    await _performDBOperation(note, DatabaseOperation.clear);
   }
 
   _performDBOperation(Note note, DatabaseOperation databaseOperation) async {

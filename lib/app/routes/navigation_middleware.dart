@@ -27,7 +27,6 @@ class NavigationMiddleWare extends GetMiddleware {
       default:
         return page;
     }
-    return super.onPageBuildStart(page);
   }
 
   @override

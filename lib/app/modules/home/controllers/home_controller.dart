@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_note_app/app/data/database/app_database.dart';
 import 'package:the_note_app/app/data/models/note_model.dart';
@@ -10,6 +11,28 @@ class HomeController extends GetxController {
   late AppDatabaseProxy _appDatabaseProxy = Get.find();
 
   StreamSubscription<List<Note>>? _streamSubscription;
+
+  var isSearchingMode = false.obs;
+
+  var filteredNotesList = <Note>[];
+
+  TextEditingController queryEditingController = TextEditingController();
+
+  void toggleSearchingMode() {
+    filteredNotesList = notesList;
+    isSearchingMode.value = false;
+    queryEditingController.clear();
+  }
+
+  void onQueryChanged(String? query) {
+    filteredNotesList = query == null
+        ? notesList
+        : notesList
+            .where((element) =>
+                element.title!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+    update();
+  }
 
   @override
   void onInit() async {
@@ -30,5 +53,7 @@ class HomeController extends GetxController {
   @override
   void onClose() {
     _streamSubscription?.cancel();
+    queryEditingController.dispose();
+    super.onClose();
   }
 }
