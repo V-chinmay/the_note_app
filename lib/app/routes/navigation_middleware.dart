@@ -6,6 +6,8 @@ import 'package:the_note_app/app/modules/home/controllers/home_controller.dart';
 import 'package:the_note_app/app/modules/note_edit/controllers/note_edit_controller.dart';
 import 'package:the_note_app/app/data/models/note_model.dart';
 import 'package:the_note_app/app/modules/note_edit/views/note_edit_view.dart';
+import 'package:the_note_app/app/modules/user_verification/controllers/user_verification_controller.dart';
+import 'package:the_note_app/app/modules/user_verification/views/user_verification_view.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +25,11 @@ class NavigationMiddleWare extends GetMiddleware {
 
         noteEditController.isNewNote = isNoteNew;
         noteEditController.note = note;
+        return page;
+      case UserVerificationView:
+        if (Get.arguments["username"] == null) return null;
+        UserVerificationController userVerificationController = Get.find();
+        userVerificationController.userEmailID = Get.arguments["username"];
         return page;
       default:
         return page;

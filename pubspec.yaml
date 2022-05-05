@@ -13,8 +13,9 @@ dependencies:
   floor_annotation: any
   floor: any
   rxdart: 0.27.3
-  amplify_flutter:
-  amplify_auth_cognito:
+  amplify_flutter: any
+  amplify_auth_cognito: any
+  pin_code_fields: 7.4.0
   flutter: 
     sdk: flutter
 

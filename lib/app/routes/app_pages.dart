@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import 'package:the_note_app/app/modules/UserVerification/bindings/user_verification_binding.dart';
+import 'package:the_note_app/app/modules/UserVerification/views/user_verification_view.dart';
 import 'package:the_note_app/app/modules/home/bindings/home_binding.dart';
 import 'package:the_note_app/app/modules/home/views/home_view.dart';
 import 'package:the_note_app/app/modules/login/bindings/login_binding.dart';
@@ -17,23 +19,25 @@ class AppPages {
 
   static final routes = [
     GetPage(
-      name: _Paths.HOME,
-      page: () => HomeView(),
-      binding: HomeBinding(),
-      middlewares: [Get.find<NavigationMiddleWare>()]
-    ),
+        name: _Paths.HOME,
+        page: () => HomeView(),
+        binding: HomeBinding(),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
     GetPage(
-      name: _Paths.LOGIN,
-      page: () => LoginView(),
-      binding: LoginBinding(),
-      middlewares: [Get.find<NavigationMiddleWare>()]
-    ),
+        name: _Paths.LOGIN,
+        page: () => LoginView(),
+        binding: LoginBinding(),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
     GetPage(
-      name: _Paths.NOTE_EDIT,
-      transition: Transition.cupertino,
-      page: () => NoteEditView(),
-      binding: NoteEditBinding(),
-      middlewares: [Get.find<NavigationMiddleWare>()]
+        name: _Paths.NOTE_EDIT,
+        transition: Transition.cupertino,
+        page: () => NoteEditView(),
+        binding: NoteEditBinding(),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
+    GetPage(
+      name: _Paths.USER_VERIFICATION,
+      page: () => UserVerificationView(),
+      binding: UserVerificationBinding(),
     ),
   ];
 }

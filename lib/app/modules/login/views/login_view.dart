@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:the_note_app/app/common/amplifyconfiguration.dart';
+import 'package:the_note_app/app/common/errors.dart';
+import 'package:the_note_app/app/common/result.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
+import 'package:the_note_app/app/handlers/auth/auth_handler.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
@@ -28,13 +31,12 @@ class LoginView extends GetView<LoginController> {
           )
         ],
       ));
+      
   Widget get _loginButton => ConstrainedBox(
         constraints: BoxConstraints(minWidth: double.infinity),
         child: ElevatedButton(
           onPressed: this.onLoginPressed,
-          child: Text("Login"),
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.orange)),
+          child: Text(this.controller.isNewUser.value ?  "Register" : "Login"),
         ),
       );
 
@@ -66,11 +68,40 @@ class LoginView extends GetView<LoginController> {
         ],
       );
 
-  void onLoginPressed() {
+  void onLoginPressed() async {
     if (this._credsFormKey.currentState?.validate() ?? false) {
-      this.controller.isNewUser.value
-          ? this.controller.signUpWithInputs()
-          : this.controller.signInWithInputs();
+      FocusManager.instance.primaryFocus?.unfocus();
+      Result<AuthStatus, AuthError> result = await Get.showOverlay(
+          asyncFunction: this.controller.loginUserWithInputs);
+
+      if (result is SuccessResult) {
+        if (result.data == AuthStatus.AuthorizedButNeedsVerification) {
+          bool isVerificationSuccessful =
+              await Get.toNamed(Routes.USER_VERIFICATION, arguments: {
+            "username": this.controller.inputEmailID
+          }); //successfully signed in but need verification go to signup verification screen
+          if (!isVerificationSuccessful) {
+            Get.showSnackbar(GetSnackBar(
+              message: "User verification failed.Please try again!",
+            ));
+            return;
+          }
+        }
+        Get.toNamed(Routes.HOME);
+        //successfully signed in go to the home screen
+      } else if (result is FailureResult) {
+        if (result.error == AuthError.userNotConfirmed) {
+          Get.toNamed(Routes.USER_VERIFICATION,
+              arguments: {"username": this.controller.inputEmailID}
+          ); //user not confirmed go to verification screen
+          return;
+        }
+        Get.showSnackbar(GetSnackBar(
+          message: result.error!.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: Duration(seconds: 1),
+        ));
+      }
     }
   }
 
@@ -93,7 +124,7 @@ class LoginView extends GetView<LoginController> {
           padding: const EdgeInsets.all(20.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             _userAuthDetailsInputForm,
-            if (this.controller.isNewUser.value)
+            if (!this.controller.isNewUser.value)
               Align(
                   alignment: Alignment.centerRight,
                   child: _forgotPasswordButton),
