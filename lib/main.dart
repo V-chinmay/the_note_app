@@ -29,6 +29,14 @@ void main() async
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.orange))
           ),
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(TextStyle(
+                color:Colors.orange
+                )
+              )
+            )
+          ),
           scaffoldBackgroundColor: Color.fromRGBO(0x10, 0x11, 0x11, 1),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
               foregroundColor: Colors.white,

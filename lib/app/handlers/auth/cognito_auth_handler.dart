@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/categories/amplify_categories.dart';
 import 'package:get/get.dart';
@@ -17,10 +19,25 @@ class CognitoAuthHandler implements AuthHandler {
           : AuthStatus.UnAuthorized;
 
   @override
-  Future<bool> resetPassword() {
-    // TODO: implement resetPassword
-    throw UnimplementedError();
+  Future<Result<void, AuthError>> resetPassword(String emailID) async {
+    Result<void, AuthError> resetPasswordAuthResult;
+    try {
+      ResetPasswordResult resetPasswordResult =
+          await this.cognitoAuthCategory.resetPassword(username: emailID);
+      resetPasswordAuthResult = resetPasswordResult.isPasswordReset
+          ? SuccessResult(null)
+          : FailureResult(AuthError.unknown);
+    } on AuthException catch (error) {
+      final cognitoAuthError = AuthError.fromCognitoException(error);
+      resetPasswordAuthResult = FailureResult(cognitoAuthError == AuthError.unknown
+          ? AuthError("400", error.message)
+          : cognitoAuthError);
+    }
+    return resetPasswordAuthResult;
   }
+
+
+  
 
   @override
   Future<Result<AuthStatus, AuthError>> signIn(String emailID, String password,
@@ -103,5 +120,22 @@ class CognitoAuthHandler implements AuthHandler {
     }
 
     return authAttemptResult;
+  }
+
+  @override
+  Future<Result<Null, AuthError>> resendVerificationCode(String emailID) async {
+    Result<Null, AuthError> resendAuthCodeResult;
+
+    try {
+      await cognitoAuthCategory.resendSignUpCode(username: emailID);
+      resendAuthCodeResult = SuccessResult(null);
+    } on AuthException catch (error) {
+      final cognitoError = AuthError.fromCognitoException(error);
+      resendAuthCodeResult = FailureResult(cognitoError == AuthError.unknown
+          ? AuthError("400", error.message)
+          : cognitoError);
+    }
+
+    return resendAuthCodeResult;
   }
 }

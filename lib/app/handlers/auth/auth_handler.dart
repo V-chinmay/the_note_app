@@ -10,6 +10,7 @@ abstract class AuthHandler {
   Future<Result<AuthStatus, AuthError>> signUp(String emailID, String password,
       {String? username});
   Future<Result<AuthStatus, AuthError>> verifyUser(String emailID,String verificationCode);
+  Future<Result<void, AuthError>> resendVerificationCode(String emailID);
   Future<bool> signOut();
-  Future<bool> resetPassword();
+  Future<Result<void, AuthError>> resetPassword(String emailID);
 }

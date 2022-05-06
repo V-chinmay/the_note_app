@@ -28,8 +28,14 @@ class UserVerificationController extends GetxController {
     return _cognitoAuthHandler.verifyUser(this.userEmailID!,verificationCodeController.text);    
   }
 
+
+  Future<Result<Null,AuthError>> resendConfirmationCode()
+  {
+    return _cognitoAuthHandler.resendVerificationCode(this.userEmailID!);    
+  }
+
   @override
   void onClose() {
-    verificationCodeController.dispose();
+
   }
 }

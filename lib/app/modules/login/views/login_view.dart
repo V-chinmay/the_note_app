@@ -31,17 +31,17 @@ class LoginView extends GetView<LoginController> {
           )
         ],
       ));
-      
+
   Widget get _loginButton => ConstrainedBox(
         constraints: BoxConstraints(minWidth: double.infinity),
         child: ElevatedButton(
           onPressed: this.onLoginPressed,
-          child: Text(this.controller.isNewUser.value ?  "Register" : "Login"),
+          child: Text(this.controller.isNewUser.value ? "Register" : "Login"),
         ),
       );
 
   TextButton get _forgotPasswordButton => TextButton(
-      onPressed: () => null,
+      onPressed: onForgotPasswordPressed,
       child: Text(
         "Forgot Password",
         style: TextStyle(color: Colors.orange),
@@ -68,6 +68,10 @@ class LoginView extends GetView<LoginController> {
         ],
       );
 
+  void onForgotPasswordPressed() {
+    Get.toNamed(Routes.RESET_PASSWORD);
+  }
+
   void onLoginPressed() async {
     if (this._credsFormKey.currentState?.validate() ?? false) {
       FocusManager.instance.primaryFocus?.unfocus();
@@ -91,15 +95,15 @@ class LoginView extends GetView<LoginController> {
         //successfully signed in go to the home screen
       } else if (result is FailureResult) {
         if (result.error == AuthError.userNotConfirmed) {
-          Get.toNamed(Routes.USER_VERIFICATION,
-              arguments: {"username": this.controller.inputEmailID}
-          ); //user not confirmed go to verification screen
+          Get.toNamed(Routes.USER_VERIFICATION, arguments: {
+            "username": this.controller.inputEmailID
+          }); //user not confirmed go to verification screen
           return;
         }
         Get.showSnackbar(GetSnackBar(
           message: result.error!.message,
           snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 1),
+          duration: Duration(seconds: 2),
         ));
       }
     }
