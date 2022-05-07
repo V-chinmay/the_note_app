@@ -6,6 +6,7 @@ import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/handlers/auth/auth_handler.dart';
+import 'package:the_note_app/app/modules/user_verification/controllers/user_verification_controller.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
@@ -82,7 +83,8 @@ class LoginView extends GetView<LoginController> {
         if (result.data == AuthStatus.AuthorizedButNeedsVerification) {
           bool isVerificationSuccessful =
               await Get.toNamed(Routes.USER_VERIFICATION, arguments: {
-            "username": this.controller.inputEmailID
+            "username": this.controller.inputEmailID,
+            "userVerificationType" : UserVerificationType.SignUp
           }); //successfully signed in but need verification go to signup verification screen
           if (!isVerificationSuccessful) {
             Get.showSnackbar(GetSnackBar(
@@ -91,12 +93,13 @@ class LoginView extends GetView<LoginController> {
             return;
           }
         }
-        Get.toNamed(Routes.HOME);
+        Get.offAllNamed(Routes.HOME);
         //successfully signed in go to the home screen
       } else if (result is FailureResult) {
         if (result.error == AuthError.userNotConfirmed) {
           Get.toNamed(Routes.USER_VERIFICATION, arguments: {
-            "username": this.controller.inputEmailID
+            "username": this.controller.inputEmailID,
+            "userVerificationType" : UserVerificationType.SignUp
           }); //user not confirmed go to verification screen
           return;
         }

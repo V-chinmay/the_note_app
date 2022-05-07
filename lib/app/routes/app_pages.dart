@@ -8,6 +8,8 @@ import 'package:the_note_app/app/modules/note_edit/bindings/note_edit_binding.da
 import 'package:the_note_app/app/modules/note_edit/views/note_edit_view.dart';
 import 'package:the_note_app/app/modules/reset_password/bindings/reset_password_binding.dart';
 import 'package:the_note_app/app/modules/reset_password/views/reset_password_view.dart';
+import 'package:the_note_app/app/modules/update_password/bindings/update_password_binding.dart';
+import 'package:the_note_app/app/modules/update_password/views/update_password_view.dart';
 import 'package:the_note_app/app/modules/user_verification/bindings/user_verification_binding.dart';
 import 'package:the_note_app/app/modules/user_verification/views/user_verification_view.dart';
 import 'package:the_note_app/app/routes/navigation_middleware.dart';
@@ -40,11 +42,19 @@ class AppPages {
         name: _Paths.USER_VERIFICATION,
         page: () => UserVerificationView(),
         binding: UserVerificationBinding(),
-        middlewares: [Get.find<NavigationMiddleWare>()]),
+        middlewares: [Get.find<NavigationMiddleWare>()]
+        ),
     GetPage(
       name: _Paths.RESET_PASSWORD,
       page: () => ResetPasswordView(),
       binding: ResetPasswordBinding(),
+      middlewares: [Get.find<NavigationMiddleWare>()]
+    ),
+    GetPage(
+      name: _Paths.UPDATE_PASSWORD,
+      page: () => UpdatePasswordView(),
+      binding: UpdatePasswordBinding(),
+      middlewares: [Get.find<NavigationMiddleWare>()]
     ),
   ];
 }

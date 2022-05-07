@@ -10,14 +10,6 @@ import '../controllers/login_controller.dart';
 class LoginBinding extends Bindings {
   @override
   void dependencies() async {
-    
-    Get.lazyPut<LoginController>(
-      () => LoginController(),
-    );    
-    
-    await Amplify.addPlugin(AmplifyAuthCognito());
-    await Amplify.configure(cognitoConfig);
-    Get.put(CognitoAuthHandler(Amplify.Auth));
-
+    Get.replace<LoginController>(LoginController());
   }
 }

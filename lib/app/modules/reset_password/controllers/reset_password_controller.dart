@@ -8,10 +8,11 @@ class ResetPasswordController extends GetxController {
   TextEditingController emailIDEditingController = TextEditingController();
 
   late CognitoAuthHandler _cognitoAuthHandler = Get.find();
+  
+  String get inputEmailId => emailIDEditingController.text;
 
   Future<Result<void, AuthError>> sendResetPasswordLinkForInputEmailID() {
-    return _cognitoAuthHandler
-        .resetPassword(emailIDEditingController.text);
+    return _cognitoAuthHandler.resetPassword(emailIDEditingController.text);
   }
 
   @override

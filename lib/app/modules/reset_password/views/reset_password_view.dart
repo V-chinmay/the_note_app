@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
+import 'package:the_note_app/app/modules/user_verification/controllers/user_verification_controller.dart';
+import 'package:the_note_app/app/routes/app_pages.dart';
 import '../controllers/reset_password_controller.dart';
 
 class ResetPasswordView extends GetView<ResetPasswordController> {
@@ -17,12 +19,17 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
           asyncFunction: this.controller.sendResetPasswordLinkForInputEmailID);
       if (resetPasswordResult is SuccessResult) {
         Get.showSnackbar(GetSnackBar(
-          message: "Successfully sent the reset link to the email address!",
+          message:
+              "Successfully sent the confirmation code to the email address!",
         ));
+        Get.toNamed(Routes.USER_VERIFICATION,arguments: {
+          "userVerificationType":UserVerificationType.UpdatePassword,
+          "username":this.controller.inputEmailId
+        });
       } else if (resetPasswordResult is FailureResult) {
         Get.showSnackbar(GetSnackBar(
           message: resetPasswordResult.error?.message ??
-              "Failed to send resent link to the email address!",
+              "Failed to send confirmation code to the email address!",
         ));
       }
     }
@@ -41,10 +48,10 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
       ),
       body: Container(
         margin: EdgeInsets.only(left: 20, right: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-          Text("Enter the emailID to which the reset link needs to sent"),
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Text(
+              "Enter the emailID to which the confirmation code needs to sent"),
           Form(
             key: _formStateKey,
             child: UserInfoField(
@@ -54,7 +61,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
           ),
           ElevatedButton(
               onPressed: onResetPasswordPressed,
-              child: Text("Send password reset link"))
+              child: Text("Send password confirmation code"))
         ]),
       ),
     );

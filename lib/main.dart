@@ -9,10 +9,12 @@ import 'package:the_note_app/app/handlers/auth/cognito_auth_handler.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/navigation_middleware.dart';
 
-void main() async
-{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(NavigationMiddleWare());
+  final cognitoAuthHandler = CognitoAuthHandler(Amplify.Auth);
+  await cognitoAuthHandler.initialise();
+  Get.put(cognitoAuthHandler);
   runApp(
     GetMaterialApp(
       title: "Application",
@@ -27,16 +29,12 @@ void main() async
             elevation: 0,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.orange))
-          ),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.orange))),
           textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all(TextStyle(
-                color:Colors.orange
-                )
-              )
-            )
-          ),
+              style: ButtonStyle(
+                  textStyle: MaterialStateProperty.all(
+                      TextStyle(color: Colors.orange)))),
           scaffoldBackgroundColor: Color.fromRGBO(0x10, 0x11, 0x11, 1),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
               foregroundColor: Colors.white,

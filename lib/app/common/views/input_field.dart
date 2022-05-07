@@ -9,11 +9,19 @@ class UserInfoField extends StatelessWidget {
       {Key? key,
       this.textEditingController,
       this.onInputSubmitted,
-      this.passwordPolicyRegex})
+      this.passwordPolicyRegex,
+      this.validator,
+      this.labelText,
+      this.hintText
+      })
       : super(key: key);
 
   final UserInfoFieldType userInfoFieldType;
   void Function(String)? onInputSubmitted;
+  String? Function(String?)? validator;
+  String? labelText;
+  String? hintText;
+
   RegExp? passwordPolicyRegex;
   RxBool _isPasswordVisible = false.obs;
 
@@ -39,7 +47,9 @@ class UserInfoField extends StatelessWidget {
     }
   }
 
-  final InputDecoration _commonInputDecoration = InputDecoration(
+  late InputDecoration _commonInputDecoration = InputDecoration(
+      hintText: hintText,
+      labelText: labelText,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
       errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
@@ -49,11 +59,13 @@ class UserInfoField extends StatelessWidget {
     switch (userInfoFieldType) {
       case UserInfoFieldType.email:
         return _commonInputDecoration.copyWith(
-            hintText: "user@example.com", labelText: "Email-ID");
+            hintText: this._commonInputDecoration.hintText ?? "user@example.com", 
+            labelText:  this._commonInputDecoration.labelText ?? "Email-ID"
+        );
       case UserInfoFieldType.password:
         return _commonInputDecoration.copyWith(
-            hintText: "password",
-            labelText: "Password",
+            hintText: _commonInputDecoration.hintText ?? "password",
+            labelText: _commonInputDecoration.labelText ?? "Password",
             suffixIcon: Obx(() => IconButton(
                 onPressed: () {
                   this._isPasswordVisible.toggle();
@@ -71,7 +83,8 @@ class UserInfoField extends StatelessWidget {
     return this.userInfoFieldType == UserInfoFieldType.password
         ? Obx(
             () => TextFormField(
-              validator: _inputValidator(this.userInfoFieldType),
+              validator:
+                  this.validator ?? _inputValidator(this.userInfoFieldType),
               decoration: _inputDecoration(this.userInfoFieldType),
               controller: this.textEditingController,
               obscureText:

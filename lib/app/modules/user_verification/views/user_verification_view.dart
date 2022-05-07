@@ -5,6 +5,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
 import 'package:the_note_app/app/handlers/auth/auth_handler.dart';
+import 'package:the_note_app/app/routes/app_pages.dart';
 
 import '../controllers/user_verification_controller.dart';
 
@@ -34,16 +35,29 @@ class UserVerificationView extends GetView<UserVerificationController> {
       );
 
   void onVerifyPressed() async {
-    Result<AuthStatus, AuthError> verificationResult = await Get.showOverlay(
-        loadingWidget: CircularProgressIndicator(),
-        asyncFunction: controller.verifyUserWithInputCode);
-    if (verificationResult is SuccessResult) {
-      Get.back(result: true);
-    } else if (verificationResult is FailureResult) {
-      Get.showSnackbar(GetSnackBar(
-        message: verificationResult.error?.message ??
-            "Failed to verify the user.Please try again",
-      ));
+    switch (this.controller.userVerificationType) {
+      case UserVerificationType.SignUp:
+        Result<AuthStatus, AuthError> verificationResult =
+            await Get.showOverlay(
+                loadingWidget: CircularProgressIndicator(),
+                asyncFunction: controller.verifyUserWithInputCode);
+        if (verificationResult is SuccessResult) {
+          Get.back(result: true);
+        } else if (verificationResult is FailureResult) {
+          Get.showSnackbar(GetSnackBar(
+            message: verificationResult.error?.message ??
+                "Failed to verify the user.Please try again",
+          ));
+        }
+        break;
+      case UserVerificationType.UpdatePassword:
+        Get.toNamed(Routes.UPDATE_PASSWORD, arguments: {
+            "username":this.controller.userEmailID,
+            "confirmationCode":this.controller.inputConfirmationCode
+          }
+        );
+        break;
+      default:
     }
   }
 
@@ -52,7 +66,7 @@ class UserVerificationView extends GetView<UserVerificationController> {
         await Get.showOverlay(
             loadingWidget: SizedBox.fromSize(
                 size: Size.square(48), child: CircularProgressIndicator()),
-            asyncFunction: this.controller.resendConfirmationCode);
+            asyncFunction: this.controller.resendSignUpConfirmationCode);
     if (resendConfirmationCodeResult is SuccessResult) {
       Get.showSnackbar(GetSnackBar(
         duration: Duration(seconds: 1),
@@ -91,7 +105,7 @@ class UserVerificationView extends GetView<UserVerificationController> {
                 Text("Enter the code sent to ${this.controller.userEmailID}"),
                 _pinCodeTextField,
                 _verifyButton,
-                _resendConfirmationCodeButton
+                if(this.controller.userVerificationType == UserVerificationType.SignUp)_resendConfirmationCodeButton
               ],
             ),
           )),
