@@ -26,9 +26,11 @@ class NavigationMiddleWare extends GetMiddleware {
         }
         break;
       default:
+        final authStatus = Get.find<CognitoAuthHandler>().authStatus;
         if (Get.find<CognitoAuthHandler>().authStatus !=
-            AuthStatus.Authorized) {
-          return RouteSettings(name:Routes.LOGIN);
+                AuthStatus.Authorized &&
+            (route == Routes.HOME || route == Routes.NOTE_EDIT)) {
+          return RouteSettings(name: Routes.LOGIN);
         }
     }
     return super.redirect(route);

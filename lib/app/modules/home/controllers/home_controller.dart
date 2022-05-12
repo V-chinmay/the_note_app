@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:the_note_app/app/common/errors.dart';
+import 'package:the_note_app/app/common/result.dart';
 import 'package:the_note_app/app/data/database/app_database.dart';
 import 'package:the_note_app/app/data/models/note_model.dart';
+import 'package:the_note_app/app/handlers/providers/note_provider.dart';
 
 class HomeController extends GetxController {
   List<Note> notesList = <Note>[];
 
   late AppDatabaseProxy _appDatabaseProxy = Get.find();
+  late NoteProvider _noteProvider = Get.find();
 
   StreamSubscription<List<Note>>? _streamSubscription;
 
@@ -36,12 +40,13 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
-    Get.put(AppDatabaseProxy());
-
     _streamSubscription = _appDatabaseProxy.noteStream.listen((value) {
       notesList = value;
       update();
     });
+
+    Result<List<Note>,NoteAPIError> note = await this._noteProvider.getAllNotes(userID: "");
+
     super.onInit();
   }
 

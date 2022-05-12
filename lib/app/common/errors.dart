@@ -36,3 +36,30 @@ class AuthError implements Error {
     }
   }
 }
+
+
+
+class NoteAPIError implements Error {
+  NoteAPIError(this.code, this.message);
+
+  @override
+  String code;
+
+  @override
+  String message;
+
+  static NoteAPIError responseParsing = NoteAPIError("300", "Failed to parse the response");
+  static NoteAPIError unknown = NoteAPIError("300", "Unknown Error");
+
+
+
+
+  // factory NoteAPIError.fromNoteAPIService() {
+  //   switch (exception.runtimeType) {
+  //     case UserNotConfirmedException:
+  //       return NoteAPIError.responseParsing;
+  //     default:
+  //       return NoteAPIError.unknown;
+  //   }
+  // }
+}

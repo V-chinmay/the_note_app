@@ -34,16 +34,24 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
 
   initialise() async {
     if (!Amplify.isConfigured) {
-      await Amplify.addPlugins([AmplifyAuthCognito(), AmplifyAPI()]);
+      await Amplify.addPlugins([
+        AmplifyAuthCognito(), 
+        // AmplifyAPI()
+        ]);
       await Amplify.configure(cognitoConfig);
     }
     try {
       _cognitoAuthUser = await cognitoAuthCategory.getCurrentUser();
+    } catch (error) {
+      print("Failed to get current user ${error}");
+    }
+
+    try {
       _cognitoAuthSession = (await cognitoAuthCategory.fetchAuthSession(
               options: CognitoSessionOptions(getAWSCredentials: true)))
           as CognitoAuthSession;
     } catch (error) {
-      
+      print("Failed to get current auth session with $error");
     }
   }
 
@@ -84,6 +92,7 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
       authAttemptStatus = signInResult.isSignedIn
           ? SuccessResult(AuthStatus.Authorized)
           : FailureResult(AuthError.unknown);
+      await initialise();
     } on AuthException catch (error) {
       AuthError authError = AuthError.fromCognitoException(error);
       authAttemptStatus = FailureResult(authError == AuthError.unknown
