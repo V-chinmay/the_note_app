@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_note_app/app/data/database/app_database.dart';
+import 'package:the_note_app/app/handlers/auth/cognito_auth_handler.dart';
 
 import '../../../data/models/note_model.dart';
 import 'package:the_note_app/app/common/extensions/datetime.dart';
@@ -14,14 +15,14 @@ class NoteEditController extends GetxController {
     _note = note;
     titleEditingController =
         TextEditingController(text: GetUtils.capitalize(_note.title ?? ""));
-    descriptionEditingController = TextEditingController(
-        text: GetUtils.capitalize(_note.description ?? ""));
+    descriptionEditingController =
+        TextEditingController(text: GetUtils.capitalize(_note.content ?? ""));
   }
 
   late TextEditingController descriptionEditingController;
   late TextEditingController titleEditingController;
   String get lastModifiedDate =>
-      (_note.lastModifiedDate ?? DateTime.now()).formattedDateString();
+      (_note.timeStampDate ?? DateTime.now()).formattedDateString();
 
   late var isEditingMode = (false | isNewNote).obs;
 
@@ -32,12 +33,13 @@ class NoteEditController extends GetxController {
   }
 
   Future<void> updateNote() async {
-    _note.lastModifiedDate = DateTime.now();
-    _note.description = descriptionEditingController.text;
+    _note.timestamp = DateTime.now().millisecond;
+    _note.content = descriptionEditingController.text;
     _note.title = titleEditingController.text;
 
-    if (_note.id == null) {
-      _note.id = _note.hashCode.toRadixString(16);
+    if (_note.noteId == null) {
+      _note.noteId = _note.hashCode.toRadixString(16);
+      _note.userId = Get.find<CognitoAuthHandler>().currentAuthorizedUserID!;
       await _appDatabaseProxy.insertNewNote(_note);
     } else {
       await _appDatabaseProxy.updateNote(_note);

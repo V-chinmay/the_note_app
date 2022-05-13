@@ -3,10 +3,11 @@ part of 'app_database.dart';
 enum DatabaseOperation { insert, update, delete, clear }
 
 class AppDatabaseProxy {
-  AppDatabaseProxy(){
-    _updateNoteStreamWithLatestNotes();
+  AppDatabaseProxy(this.currentUserID) {
+    _updateNoteStreamWithLatestNotes(userID: this.currentUserID);
   }
   _AppDatabase? __appDatabase;
+  String currentUserID;
 
   Future<_AppDatabase> get _appDatabase async {
     if (__appDatabase == null) {
@@ -29,8 +30,8 @@ class AppDatabaseProxy {
     await _performDBOperation(note, DatabaseOperation.delete);
   }
 
-  Future<void> clearAllNotes(Note note) async {
-    await _performDBOperation(note, DatabaseOperation.clear);
+  Future<void> clearAllNotes(String userID) async {
+    await _performDBOperation(Note(userId: userID), DatabaseOperation.clear);
   }
 
   _performDBOperation(Note note, DatabaseOperation databaseOperation) async {
@@ -42,16 +43,19 @@ class AppDatabaseProxy {
         await (await _appDatabase).noteDao.updateNote(note);
         break;
       case DatabaseOperation.delete:
-        await (await _appDatabase).noteDao.deleteNoteWithID(note.id!);
+        await (await _appDatabase)
+            .noteDao
+            .deleteNoteWithID(note.userId!,note.noteId!);
         break;
       case DatabaseOperation.clear:
-        await (await _appDatabase).noteDao.deleteAllNotes();
+        await (await _appDatabase).noteDao.deleteAllNotes(note.userId!);
         break;
     }
-    _updateNoteStreamWithLatestNotes();
+    _updateNoteStreamWithLatestNotes(userID: this.currentUserID);
   }
 
-  void _updateNoteStreamWithLatestNotes() async {
-    noteStream.add(await (await _appDatabase).noteDao.getAllNotes());
+  void _updateNoteStreamWithLatestNotes({required String userID}) async {
+    noteStream
+        .add(await (await _appDatabase).noteDao.getAllNotes(userID));
   }
 }

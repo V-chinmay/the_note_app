@@ -2,7 +2,7 @@ enum EndpointType { getAllNotes, deleteNoteByID, updateNote, getNoteDetailByID }
 
 abstract class Endpoints {
   static Map<EndpointType, String> endpointMap = {
-    EndpointType.getAllNotes: "dev/notes",
+    EndpointType.getAllNotes: "/dev/notes",
     EndpointType.getNoteDetailByID: "dev/note/n",
     EndpointType.deleteNoteByID: "dev/note/t",
     EndpointType.updateNote: "dev/note"

@@ -35,8 +35,8 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
   initialise() async {
     if (!Amplify.isConfigured) {
       await Amplify.addPlugins([
-        AmplifyAuthCognito(), 
-        // AmplifyAPI()
+        // AmplifyAPI(),
+        AmplifyAuthCognito()
         ]);
       await Amplify.configure(cognitoConfig);
     }

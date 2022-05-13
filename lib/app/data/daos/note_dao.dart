@@ -7,21 +7,18 @@ import 'package:the_note_app/app/data/models/note_model.dart';
 
 @dao
 abstract class NoteDao {
-  @Query("SELECT * FROM Note")
-  Future<List<Note>> getAllNotes();
+  @Query("SELECT * FROM Note WHERE userId=:userID")
+  Future<List<Note>> getAllNotes(String userID);
 
 
-  @Query("SELECT * FROM Note")
-  Future<Stream<List<Note>>?> getAllNotesAsStream();
+  @Query("DELETE FROM Note WHERE userId=:userID")
+  Future<void> deleteAllNotes(String userID);
 
-  @Query("DELETE FROM Note")
-  Future<void> deleteAllNotes();
+  @Query("QUERY * FROM Note WHERE  userId=:userID AND  noteId=:noteId ")
+  Future<Note?> getNoteWithID(String userID,String noteId);
 
-  @Query("QUERY * FROM Note WHERE id=:id")
-  Future<Note?> getNoteWithID(String id);
-
-  @Query("DELETE FROM Note WHERE id=:id")
-  Future<void> deleteNoteWithID(String id);
+  @Query("DELETE FROM Note WHERE  userId=:userID  AND noteId=:noteId")
+  Future<void> deleteNoteWithID(String userID,String noteId);
 
   @update
   Future<void> updateNote(Note note);

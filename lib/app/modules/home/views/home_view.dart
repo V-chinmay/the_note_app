@@ -87,7 +87,7 @@ class HomeView extends GetView<HomeController> {
                           },
                           child: NoteTile(
                               noteList[index].title!,
-                              noteList[index].lastModifiedDate ??
+                              noteList[index].timeStampDate ??
                                   DateTime.now(),
                               ((index % 5 + 1) * 100))));
             },

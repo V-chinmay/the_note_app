@@ -6,33 +6,33 @@ const POOL_ID = "us-east-1_GElAtp7cW";
 const AWS_PASSWORD_POLICY_REGEX = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\^$*.\[\]{}\(\)?\-“!@#%&/,><\’:;|_~`])\S{6,99}$';
 
 const cognitoConfig = ''' 
-      {
-          "UserAgent": "aws-amplify-cli/2.0",
-          "Version": "1.0",
-          "auth": {
-            "plugins": {
-              "awsCognitoAuthPlugin":
-                {
-                  "IdentityManager": {
-                      "Default": {}
-                  },
-                  "CredentialsProvider": {
-                      "CognitoIdentity": {
-                          "Default": {
-                              "PoolId": "$POOL_ID",
-                              "Region": "$REGION"
-                          }
-                      }
-                  },
-                  "CognitoUserPool": {
-                      "Default": {
-                          "PoolId": "$POOL_ID",
-                          "AppClientId": "$APP_CLIENT_ID",
-                          "Region": "$REGION"
-                      }
-                  }
-                }
-              }
+     {
+  "UserAgent": "aws-amplify-cli/2.0",
+  "Version": "1.0",
+  "auth": {
+    "plugins": {
+      "awsCognitoAuthPlugin": {
+        "CognitoUserPool": {
+          "Default": {
+            "PoolId": "$POOL_ID",
+            "AppClientId": "$APP_CLIENT_ID",
+            "Region": "$REGION"
+          }
         }
       }
+    }
+  },
+  "api": {
+    "plugins": {
+      "awsAPIPlugin": {
+        "get_notes": {
+          "endpointType": "REST",
+          "endpoint": "https://e9i387iwne.execute-api.us-east-1.amazonaws.com/dev/notes",
+          "region": "$REGION",
+          "authorizationType": "AMAZON_COGNITO_USER_POOLS"
+        }
+      }
+    }
+  }
+}
       ''';

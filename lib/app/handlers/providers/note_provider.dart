@@ -35,13 +35,16 @@ class NoteProvider implements NoteProviderInterface {
     throw UnimplementedError();
   }
 
+  
+
   @override
   Future<Result<List<Note>, NoteAPIError>> getAllNotes(
       {required String userID}) async {
     Result<List<Note>, NoteAPIError> notesFetchResult;
+    
     try {
       RestOptions restOptions =
-          RestOptions(path: Endpoints.getAlllNotesEndpoint);
+          RestOptions(path: Endpoints.getAlllNotesEndpoint,apiName: "get_notes");
 
       RestResponse response =
           await Amplify.API.get(restOptions: restOptions).response;

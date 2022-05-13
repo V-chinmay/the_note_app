@@ -81,7 +81,7 @@ class _$_AppDatabase extends _AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Note` (`id` TEXT, `title` TEXT, `description` TEXT, `lastModifiedDate` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Note` (`noteId` TEXT, `content` TEXT, `userId` TEXT, `expires` INTEGER, `cat` TEXT, `timestamp` INTEGER, `title` TEXT, PRIMARY KEY (`noteId`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -102,22 +102,26 @@ class _$NoteDao extends NoteDao {
             database,
             'Note',
             (Note item) => <String, Object?>{
-                  'id': item.id,
-                  'title': item.title,
-                  'description': item.description,
-                  'lastModifiedDate':
-                      _dateTimeConverter.encode(item.lastModifiedDate)
+                  'noteId': item.noteId,
+                  'content': item.content,
+                  'userId': item.userId,
+                  'expires': item.expires,
+                  'cat': item.cat,
+                  'timestamp': item.timestamp,
+                  'title': item.title
                 }),
         _noteUpdateAdapter = UpdateAdapter(
             database,
             'Note',
-            ['id'],
+            ['noteId'],
             (Note item) => <String, Object?>{
-                  'id': item.id,
-                  'title': item.title,
-                  'description': item.description,
-                  'lastModifiedDate':
-                      _dateTimeConverter.encode(item.lastModifiedDate)
+                  'noteId': item.noteId,
+                  'content': item.content,
+                  'userId': item.userId,
+                  'expires': item.expires,
+                  'cat': item.cat,
+                  'timestamp': item.timestamp,
+                  'title': item.title
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -131,42 +135,45 @@ class _$NoteDao extends NoteDao {
   final UpdateAdapter<Note> _noteUpdateAdapter;
 
   @override
-  Future<List<Note>> getAllNotes() async {
-    return _queryAdapter.queryList('SELECT * FROM Note',
+  Future<List<Note>> getAllNotes(String userID) async {
+    return _queryAdapter.queryList('SELECT * FROM Note WHERE userId=?1',
         mapper: (Map<String, Object?> row) => Note(
-            id: row['id'] as String?,
-            title: row['title'] as String?,
-            description: row['description'] as String?,
-            lastModifiedDate:
-                _dateTimeConverter.decode(row['lastModifiedDate'] as int?)));
+            content: row['content'] as String?,
+            userId: row['userId'] as String?,
+            expires: row['expires'] as int?,
+            cat: row['cat'] as String?,
+            timestamp: row['timestamp'] as int?,
+            noteId: row['noteId'] as String?,
+            title: row['title'] as String?),
+        arguments: [userID]);
   }
 
   @override
-  Future<Stream<List<Note>>?> getAllNotesAsStream() async {
-    await _queryAdapter.queryNoReturn('SELECT * FROM Note');
-  }
-
-  @override
-  Future<void> deleteAllNotes() async {
-    await _queryAdapter.queryNoReturn('DELETE FROM Note');
-  }
-
-  @override
-  Future<Note?> getNoteWithID(String id) async {
-    return _queryAdapter.query('QUERY * FROM Note WHERE id=?1',
-        mapper: (Map<String, Object?> row) => Note(
-            id: row['id'] as String?,
-            title: row['title'] as String?,
-            description: row['description'] as String?,
-            lastModifiedDate:
-                _dateTimeConverter.decode(row['lastModifiedDate'] as int?)),
-        arguments: [id]);
-  }
-
-  @override
-  Future<void> deleteNoteWithID(String id) async {
+  Future<void> deleteAllNotes(String userID) async {
     await _queryAdapter
-        .queryNoReturn('DELETE FROM Note WHERE id=?1', arguments: [id]);
+        .queryNoReturn('DELETE FROM Note WHERE userId=?1', arguments: [userID]);
+  }
+
+  @override
+  Future<Note?> getNoteWithID(String userID, String noteId) async {
+    return _queryAdapter.query(
+        'QUERY * FROM Note WHERE  userId=?1 AND  noteId=?2',
+        mapper: (Map<String, Object?> row) => Note(
+            content: row['content'] as String?,
+            userId: row['userId'] as String?,
+            expires: row['expires'] as int?,
+            cat: row['cat'] as String?,
+            timestamp: row['timestamp'] as int?,
+            noteId: row['noteId'] as String?,
+            title: row['title'] as String?),
+        arguments: [userID, noteId]);
+  }
+
+  @override
+  Future<void> deleteNoteWithID(String userID, String noteId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM Note WHERE  userId=?1  AND noteId=?2',
+        arguments: [userID, noteId]);
   }
 
   @override
