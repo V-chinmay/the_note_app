@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
 import 'package:the_note_app/app/handlers/auth/auth_handler.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
@@ -39,13 +41,13 @@ class UserVerificationView extends GetView<UserVerificationController> {
       case UserVerificationType.SignUp:
         Result<AuthStatus, AuthError> verificationResult =
             await Get.showOverlay(
-                loadingWidget: CircularProgressIndicator(),
+                loadingWidget: AppLoadingView(),
                 asyncFunction: controller.verifyUserWithInputCode);
         if (verificationResult is SuccessResult) {
           Get.back(result: true);
         } else if (verificationResult is FailureResult) {
-          Get.showSnackbar(GetSnackBar(
-            message: verificationResult.error?.message ??
+          Get.showSnackbar(InfoSnackBar(
+            verificationResult.error?.message ??
                 "Failed to verify the user.Please try again",
           ));
         }
@@ -64,18 +66,15 @@ class UserVerificationView extends GetView<UserVerificationController> {
   void onResendCodePressed() async {
     Result<Null, AuthError> resendConfirmationCodeResult =
         await Get.showOverlay(
-            loadingWidget: SizedBox.fromSize(
-                size: Size.square(48), child: CircularProgressIndicator()),
+            loadingWidget: AppLoadingView(),
             asyncFunction: this.controller.resendSignUpConfirmationCode);
     if (resendConfirmationCodeResult is SuccessResult) {
-      Get.showSnackbar(GetSnackBar(
-        duration: Duration(seconds: 1),
-        message: "Sent an confirmation code to your email-ID",
+      Get.showSnackbar(InfoSnackBar(
+        "Sent an confirmation code to your email-ID",
       ));
     } else if (resendConfirmationCodeResult is FailureResult) {
-      Get.showSnackbar(GetSnackBar(
-        duration: Duration(seconds: 1),
-        message: resendConfirmationCodeResult.error?.message ??
+      Get.showSnackbar(InfoSnackBar(
+        resendConfirmationCodeResult.error?.message ??
             "Failed to send confirmation code to your email-ID",
       ));
     }

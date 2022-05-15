@@ -42,19 +42,16 @@ class AppPages {
         name: _Paths.USER_VERIFICATION,
         page: () => UserVerificationView(),
         binding: UserVerificationBinding(),
-        middlewares: [Get.find<NavigationMiddleWare>()]
-        ),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
     GetPage(
-      name: _Paths.RESET_PASSWORD,
-      page: () => ResetPasswordView(),
-      binding: ResetPasswordBinding(),
-      middlewares: [Get.find<NavigationMiddleWare>()]
-    ),
+        name: _Paths.RESET_PASSWORD,
+        page: () => ResetPasswordView(),
+        binding: ResetPasswordBinding(),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
     GetPage(
-      name: _Paths.UPDATE_PASSWORD,
-      page: () => UpdatePasswordView(),
-      binding: UpdatePasswordBinding(),
-      middlewares: [Get.find<NavigationMiddleWare>()]
-    ),
+        name: _Paths.UPDATE_PASSWORD,
+        page: () => UpdatePasswordView(),
+        binding: UpdatePasswordBinding(),
+        middlewares: [Get.find<NavigationMiddleWare>()]),
   ];
 }

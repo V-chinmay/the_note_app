@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:the_note_app/app/common/amplifyconfiguration.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/handlers/auth/auth_handler.dart';
 import 'package:the_note_app/app/modules/user_verification/controllers/user_verification_controller.dart';
@@ -77,6 +79,7 @@ class LoginView extends GetView<LoginController> {
     if (this._credsFormKey.currentState?.validate() ?? false) {
       FocusManager.instance.primaryFocus?.unfocus();
       Result<AuthStatus, AuthError> result = await Get.showOverlay(
+          loadingWidget: AppLoadingView(),
           asyncFunction: this.controller.loginUserWithInputs);
 
       if (result is SuccessResult) {
@@ -87,8 +90,8 @@ class LoginView extends GetView<LoginController> {
             "userVerificationType" : UserVerificationType.SignUp
           }); //successfully signed in but need verification go to signup verification screen
           if (!isVerificationSuccessful) {
-            Get.showSnackbar(GetSnackBar(
-              message: "User verification failed.Please try again!",
+            Get.showSnackbar(InfoSnackBar(
+              "User verification failed.Please try again!",
             ));
             return;
           }
@@ -103,10 +106,8 @@ class LoginView extends GetView<LoginController> {
           }); //user not confirmed go to verification screen
           return;
         }
-        Get.showSnackbar(GetSnackBar(
-          message: result.error!.message,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 2),
+        Get.showSnackbar(InfoSnackBar(
+          result.error!.message
         ));
       }
     }

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class ElevatedNoteActionButton extends StatelessWidget {
   const ElevatedNoteActionButton({
     Key? key,
-    required this.onPressed,
+    this.onPressed,
     required this.icon,
   }) : super(key: key);
 
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final IconData icon;
 
   @override

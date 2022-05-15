@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
 
@@ -38,19 +40,19 @@ class UpdatePasswordView extends GetView<UpdatePasswordController> {
   void onUpdatePasswordPressed() async {
     if (!(this._passwordFormKey.currentState?.validate() ?? true)) return;
     Result<void, AuthError> updatePasswordResult = await Get.showOverlay(
+        loadingWidget: AppLoadingView(),
         asyncFunction:
             this.controller.confirmInputPasswordWithConfirmationCode);
 
     if (updatePasswordResult is SuccessResult) {
-      Get.showSnackbar(GetSnackBar(
-        message: "Successfully updated the password.",
+      Get.showSnackbar(InfoSnackBar(
+        "Successfully updated the password.",
       ));
       Get.offAllNamed(Routes.LOGIN);
       
     } else if (updatePasswordResult is FailureResult) {
-      Get.showSnackbar(GetSnackBar(
-        message: updatePasswordResult.error?.message ??
-            "Failed to update password.Try again!",
+      Get.showSnackbar(InfoSnackBar(
+        updatePasswordResult.error?.message ?? "Failed to update password.Try again!",
       ));
     }
   }

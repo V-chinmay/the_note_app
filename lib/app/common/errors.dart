@@ -37,8 +37,6 @@ class AuthError implements Error {
   }
 }
 
-
-
 class NoteAPIError implements Error {
   NoteAPIError(this.code, this.message);
 
@@ -48,11 +46,11 @@ class NoteAPIError implements Error {
   @override
   String message;
 
-  static NoteAPIError responseParsing = NoteAPIError("300", "Failed to parse the response");
+  static NoteAPIError responseParsing =
+      NoteAPIError("300", "Failed to parse the response");
   static NoteAPIError unknown = NoteAPIError("300", "Unknown Error");
 
-
-
+  static NoteAPIError jsonDecodeError = NoteAPIError("MDLERR", "Failed to parse the json to get the model.");
 
   // factory NoteAPIError.fromNoteAPIService() {
   //   switch (exception.runtimeType) {

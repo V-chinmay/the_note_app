@@ -10,6 +10,7 @@ abstract class Routes {
   static const USER_VERIFICATION = _Paths.USER_VERIFICATION;
   static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
   static const UPDATE_PASSWORD = _Paths.UPDATE_PASSWORD;
+
 }
 
 abstract class _Paths {

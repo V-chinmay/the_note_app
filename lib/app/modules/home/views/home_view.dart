@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:the_note_app/app/common/result.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
 import 'package:the_note_app/app/data/models/note_model.dart';
 import 'package:the_note_app/app/modules/home/views/NoteTile.dart';
 import 'package:the_note_app/app/modules/note_edit/views/note_edit_view.dart';
@@ -12,6 +15,21 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'elevated_note_action_button.dart';
 
 class HomeView extends GetView<HomeController> {
+  HomeView() {
+    controller.controllerStateStream.listen((event) {
+      switch (event) {
+        case ControllerState.success:
+          AppLoadingView.dismiss();
+          break;
+        case ControllerState.loading:
+          AppLoadingView.show();
+          break;
+        case ControllerState.failure:
+          break;
+      }
+    });
+  }
+
   void onAddNewNote() {
     Get.toNamed(Routes.NOTE_EDIT,
         arguments: {"note": Note(), "isNewNote": true});
@@ -33,24 +51,47 @@ class HomeView extends GetView<HomeController> {
                   controller: controller.queryEditingController,
                   onChanged: controller.onQueryChanged,
                   decoration: InputDecoration(
-                      hintText: "search something...",
-                      suffix: IconButton(
-                          onPressed: () {
-                            controller.queryEditingController.clear();
-                            controller.onQueryChanged(null);
-                          },
-                          icon: Icon(Icons.cancel_sharp))),
+                    hintText: "search something...",
+                    border: UnderlineInputBorder(),
+                    enabledBorder: UnderlineInputBorder(),
+                    focusedBorder: UnderlineInputBorder(),
+                  ),
                 ),
               )),
+            if (!controller.isSearchingMode.value)
+              IconButton(
+                icon: Icon(Icons.exit_to_app_rounded),
+                onPressed: onLogoutTapped,
+              ),
             if (!controller.isSearchingMode.value)
               ElevatedNoteActionButton(
                   icon: Icons.search,
                   onPressed: () => controller.isSearchingMode.value = true),
           ]);
 
+  void onLogoutTapped() {
+    Get.defaultDialog(
+      middleText: "Are you sure about logging out?",
+      barrierDismissible: false,
+      onConfirm: () async {
+        Get.back();
+        AppLoadingView.show(message: "Logging Out...");
+        final logoutResult = await controller.logOutCurrentUser();
+        AppLoadingView.dismiss();
+        if (logoutResult is SuccessResult) {
+          Get.offAllNamed(Routes.LOGIN);
+        } else if (logoutResult is FailureResult) {
+          Get.showSnackbar(InfoSnackBar("Failed to sign out"));
+        }
+      },
+      onCancel: Get.back,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
+    return Obx(
+      () => Scaffold(
         appBar: _appBar(controller.isSearchingMode.value),
         floatingActionButton: FloatingActionButton(
           onPressed: onAddNewNote,
@@ -69,7 +110,7 @@ class HomeView extends GetView<HomeController> {
                   : controller.notesList;
               return controller.notesList.isEmpty
                   ? Center(
-                      child: Text("There no notes yet!"),
+                      child: Text("There are no notes yet!"),
                     )
                   : MasonryGridView.count(
                       padding: EdgeInsets.all(20),
@@ -87,11 +128,12 @@ class HomeView extends GetView<HomeController> {
                           },
                           child: NoteTile(
                               noteList[index].title!,
-                              noteList[index].timeStampDate ??
-                                  DateTime.now(),
+                              noteList[index].timeStampDate ?? DateTime.now(),
                               ((index % 5 + 1) * 100))));
             },
           ),
-        )));
+        ),
+      ),
+    );
   }
 }

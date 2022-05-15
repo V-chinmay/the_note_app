@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
+import 'package:the_note_app/app/modules/home/controllers/home_controller.dart';
 import 'package:the_note_app/app/modules/home/views/elevated_note_action_button.dart';
 
 import '../controllers/note_edit_controller.dart';
 
 class NoteEditView extends GetView<NoteEditController> {
+  NoteEditView() {
+    controller.controllerStateStream.listen((event) {
+      switch (event) {
+        case ControllerState.success:
+          AppLoadingView.dismiss();
+          break;
+        case ControllerState.loading:
+          AppLoadingView.show();
+          break;
+        case ControllerState.failure:
+          AppLoadingView.dismiss();
+          break;
+        default:
+      }
+    });
+  }
+
   void onEditButtonPressed() async {
     if (controller.isEditingMode.value) {
       await controller.updateNote();
@@ -37,28 +57,39 @@ class NoteEditView extends GetView<NoteEditController> {
               ),
               actions: [
                 ElevatedNoteActionButton(
-                    onPressed: onDeleteButtonPressed, icon: Icons.delete),
+                    onPressed: onDeleteButtonPressed, 
+                    icon: Icons.delete
+                ),
                 SizedBox(
                   width: 10,
                 ),
                 ElevatedNoteActionButton(
-                    onPressed: onEditButtonPressed,
+                    onPressed: (controller.isASaveableEdit.isFalse && controller.isEditingMode.isTrue) ? 
+                    null:
+                    onEditButtonPressed ,
                     icon: controller.isEditingMode.value
                         ? Icons.check
                         : Icons.edit_outlined)
               ],
               expandedHeight: 200,
               flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
+                collapseMode: CollapseMode.none,
                 titlePadding: EdgeInsets.zero,
                 title: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextField(
                         controller: controller.titleEditingController,
                         textAlign: TextAlign.start,
-                        decoration: InputDecoration(border: InputBorder.none),
+                        maxLength: controller.TITLE_MAX_LENGTH,
+                        onChanged: (value) => this.controller.isASaveableEdit.value = !value.isEmpty,
+                        decoration: InputDecoration(
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            border: InputBorder.none, 
+                            hintText: "Title"
+                        ),
                         style: Theme.of(context)
                             .textTheme
                             .headline5!
@@ -84,11 +115,16 @@ class NoteEditView extends GetView<NoteEditController> {
               padding: const EdgeInsets.only(top: 20),
               child: SingleChildScrollView(
                   child: TextField(
-                      controller: controller.descriptionEditingController,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(border: InputBorder.none),
-                      enabled: controller.isEditingMode.value)),
+                controller: controller.descriptionEditingController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    hintText: "Type something here..."),
+                enabled: controller.isEditingMode.value,
+              )),
             ))
           ],
         ),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
+import 'package:the_note_app/app/common/views/app_loading_view.dart';
+import 'package:the_note_app/app/common/views/info_snackbar_view.dart';
 import 'package:the_note_app/app/common/views/input_field.dart';
 import 'package:the_note_app/app/modules/user_verification/controllers/user_verification_controller.dart';
 import 'package:the_note_app/app/routes/app_pages.dart';
@@ -14,22 +16,19 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
   void onResetPasswordPressed() async {
     if (_formStateKey.currentState?.validate() ?? false) {
       Result<void, AuthError> resetPasswordResult = await Get.showOverlay(
-          loadingWidget: SizedBox.fromSize(
-              size: Size.square(48), child: CircularProgressIndicator()),
+          loadingWidget: AppLoadingView(),
           asyncFunction: this.controller.sendResetPasswordLinkForInputEmailID);
       if (resetPasswordResult is SuccessResult) {
-        Get.showSnackbar(GetSnackBar(
-          message:
-              "Successfully sent the confirmation code to the email address!",
+        Get.showSnackbar(InfoSnackBar(
+          "Successfully sent the confirmation code to the email address!",
         ));
         Get.toNamed(Routes.USER_VERIFICATION,arguments: {
           "userVerificationType":UserVerificationType.UpdatePassword,
           "username":this.controller.inputEmailId
         });
       } else if (resetPasswordResult is FailureResult) {
-        Get.showSnackbar(GetSnackBar(
-          message: resetPasswordResult.error?.message ??
-              "Failed to send confirmation code to the email address!",
+        Get.showSnackbar(InfoSnackBar(
+          resetPasswordResult.error?.message ?? "Failed to send confirmation code to the email address!",
         ));
       }
     }

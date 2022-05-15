@@ -1,47 +1,55 @@
 import 'package:floor_annotation/floor_annotation.dart';
+import 'package:the_note_app/app/common/errors.dart';
 
 @entity
 class Note {
   @primaryKey
-  String? noteId;
+  String? noteID;
   String? content;
-  String? userId;
+  String? userID;
   int? expires;
   String? cat;
   int? timestamp;
-  
+
+  int? get timeStampInMilliseconds => timestamp != null ? timestamp! * 1000 : null;
+
+  bool isSyncedWithRemote = false;
+
   String? title;
 
-  DateTime? get timeStampDate => timestamp != null ? DateTime.fromMillisecondsSinceEpoch(timestamp!) : null;
+  DateTime? get timeStampDate => timeStampInMilliseconds != null
+      ? DateTime.fromMillisecondsSinceEpoch(timeStampInMilliseconds!)
+      : null;
 
   Note(
       {this.content,
-      this.userId,
+      this.userID,
       this.expires,
       this.cat,
       this.timestamp,
-      this.noteId,
+      this.noteID,
       this.title});
 
   Note.fromJson(Map<String, dynamic> json) {
     content = json['content'];
-    userId = json['user_id'];
+    userID = json['user_id'];
     expires = json['expires'];
     cat = json['cat'];
     timestamp = json['timestamp'];
-    noteId = json['note_id'];
+    noteID = json['note_id'];
     title = json['title'];
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['content'] = content;
-    data['user_id'] = userId;
+    data['user_id'] = userID;
     data['expires'] = expires;
     data['cat'] = cat;
     data['timestamp'] = timestamp;
-    data['note_id'] = noteId;
+    data['note_id'] = noteID;
     data['title'] = title;
+    data.removeWhere((key, value) => value == null);
     return data;
   }
 }

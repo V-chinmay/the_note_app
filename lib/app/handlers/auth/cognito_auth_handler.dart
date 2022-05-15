@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:the_note_app/app/common/amplifyconfiguration.dart';
 import 'package:the_note_app/app/common/errors.dart';
 import 'package:the_note_app/app/common/result.dart';
-import 'package:amplify_api/amplify_api.dart';
 
 import 'auth_handler.dart';
 
@@ -17,6 +16,7 @@ abstract class CognitoAuthHandlerInterface extends AuthHandlerInterface {
       String emailID, String newPassword, String confirmationCode);
   Future<Result<AuthStatus, AuthError>> verifyUserForSignUp(
       String emailID, String verificationCode);
+  Future<Result<void, AuthError>> logOut();
 }
 
 class CognitoAuthHandler implements CognitoAuthHandlerInterface {
@@ -29,6 +29,8 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
   String? get userPoolAccessToken =>
       _cognitoAuthSession?.userPoolTokens?.accessToken;
 
+  String? get userPoolIdToken => _cognitoAuthSession?.userPoolTokens?.idToken;
+
   String? get currentAuthorizedUserID => _cognitoAuthUser?.userId;
   String? get currentAuthorizedUserName => _cognitoAuthUser?.username;
 
@@ -37,12 +39,13 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
       await Amplify.addPlugins([
         // AmplifyAPI(),
         AmplifyAuthCognito()
-        ]);
+      ]);
       await Amplify.configure(cognitoConfig);
     }
     try {
       _cognitoAuthUser = await cognitoAuthCategory.getCurrentUser();
     } catch (error) {
+      _cognitoAuthUser = null;
       print("Failed to get current user ${error}");
     }
 
@@ -51,6 +54,7 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
               options: CognitoSessionOptions(getAWSCredentials: true)))
           as CognitoAuthSession;
     } catch (error) {
+      _cognitoAuthSession = null;
       print("Failed to get current auth session with $error");
     }
   }
@@ -198,5 +202,23 @@ class CognitoAuthHandler implements CognitoAuthHandlerInterface {
     }
 
     return verifyAndResetPasswordResult;
+  }
+
+  @override
+  Future<Result<void, AuthError>> logOut() async {
+    Result<void, AuthError> logOutResult;
+
+    try {
+      await cognitoAuthCategory.signOut();
+      await initialise();
+      logOutResult = SuccessResult(null);
+    } on AuthException catch (error) {
+      final cognitoError = AuthError.fromCognitoException(error);
+      logOutResult = FailureResult(cognitoError == AuthError.unknown
+          ? AuthError("400", error.message)
+          : cognitoError);
+    }
+
+    return logOutResult;
   }
 }
